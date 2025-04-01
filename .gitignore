@@ -1,0 +1,25 @@
+# Gradle files
+.gradle/
+build/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# Package files
+*.jar
+*.war
+*.ear
+
+# Virtual machine crash logs
+hs_err_pid*
+
+# Mac system files
+.DS_Store
