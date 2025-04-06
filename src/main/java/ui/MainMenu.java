@@ -5,7 +5,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.AffineTransform;
 
 public class MainMenu {
     JFrame frame;
@@ -17,6 +16,7 @@ public class MainMenu {
     JButton settingsButton;
     int screenWidth;
     int screenHeight;
+    private SettingsMenu settingsMenu;
 
     private final Color DARK_BLUE = new Color(0, 0, 60);
     private final Color MEDIUM_BLUE = new Color(40, 40, 160);
@@ -136,7 +136,7 @@ public class MainMenu {
     }
 
     public void setupPanel() {
-        mainPanel.setPreferredSize(new Dimension(800, 600));
+        mainPanel.setPreferredSize(new Dimension(800, 600)); //BUG: check this
         mainPanel.setLayout(null);
     }
     
@@ -162,19 +162,28 @@ public class MainMenu {
         settingsButton.setFont(buttonFont);
         exitButton.setFont(buttonFont);
         
-        System.out.println("Screen Width: " + screenWidth);
-        System.out.println("Button Width: " + buttonWidth);
-        System.out.println("Adaptive Font Size: " + fontSize);
-        System.out.println("Center X: " + centerX);
-        System.out.println("Left X: " + leftX);
-        System.out.println("Right X: " + rightX);
-        
         startButton.setBounds(centerX, mainRowY, buttonWidth, buttonHeight);
         preButton.setBounds(leftX, mainRowY, buttonWidth, buttonHeight);
         nextButton.setBounds(rightX, mainRowY, buttonWidth, buttonHeight);
         
         settingsButton.setBounds(0, topRowY, buttonWidth, buttonHeight);
         exitButton.setBounds(screenWidth - buttonWidth, topRowY, buttonWidth, buttonHeight);
+
+        exitButton.addActionListener(new ActionListener() {
+           @Override
+           public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+           } 
+        });
+
+        settingsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                openSettingsMenu();
+            }
+        });
+
+        
         
         mainPanel.add(startButton);
         mainPanel.add(nextButton);
@@ -362,6 +371,37 @@ public class MainMenu {
         button.setFocusPainted(false);
         
         return button;
+    }
+
+    private void openSettingsMenu() {
+        mainPanel.setVisible(false);
+        
+        SettingsMenu settingsMenu = new SettingsMenu(frame, this);
+        settingsMenu.setupSettingsMenu();
+        
+        this.settingsMenu = settingsMenu;
+    }
+    
+    public void returnToMainMenu() {
+        if (settingsMenu != null) {
+            int volume = settingsMenu.getVolume();
+            String difficulty = settingsMenu.getDifficulty();
+            boolean fullscreen = settingsMenu.isFullscreen();
+            
+            applySettings(volume, difficulty, fullscreen);
+            
+        }
+        
+        mainPanel.setVisible(true);
+    }
+    
+    private void applySettings(int volume, String difficulty, boolean fullscreen) {
+        if (fullscreen) {
+            frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        } else {
+            frame.setExtendedState(JFrame.NORMAL);
+            frame.setSize(screenWidth * 3/4, screenHeight * 3/4);
+        }
     }
 }
 
