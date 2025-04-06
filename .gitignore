@@ -1,7 +1,8 @@
 # Gradle files
 .gradle/
 build/
-
+*.bat
+gradlew
 # IDE files
 .idea/
 .vscode/
