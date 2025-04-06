@@ -18,10 +18,11 @@ public class MainMenu {
     int screenHeight;
     private SettingsMenu settingsMenu;
 
+
     private final Color DARK_BLUE = new Color(0, 0, 60);
     private final Color MEDIUM_BLUE = new Color(40, 40, 160);
     private final Color LIGHT_BLUE = new Color(80, 80, 255);
-    
+
     public MainMenu(JFrame frame) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.screenWidth = (int) screenSize.getWidth();
@@ -183,7 +184,12 @@ public class MainMenu {
             }
         });
 
-        
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainPanel.setVisible(false);
+            }
+        });
         
         mainPanel.add(startButton);
         mainPanel.add(nextButton);
@@ -409,8 +415,8 @@ class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Super Hexagon");
-            MainMenu mainf = new MainMenu(frame);
-            mainf.setupMainMenu();
+        MainMenu mainf = new MainMenu(frame);
+        mainf.setupMainMenu();
         });
     }
 }

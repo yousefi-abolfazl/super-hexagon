@@ -108,4 +108,4 @@ public class SettingsMenu {
     public boolean isFullscreen() {
         return fullscreenCheckbox.isSelected();
     }
-} 
+}
