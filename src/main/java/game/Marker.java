@@ -1,7 +1,7 @@
 package game;
 
-import java.awt.geom.GeneralPath;
-import java.awt.Graphics2D;
+import java.awt.*;
+import java.awt.geom.*;
 
 class Marker {
     double centerX;
@@ -13,6 +13,11 @@ class Marker {
     public Marker(int radius, double angle) {
         this.radius = radius;
         this.angle = angle;
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidth = (int) screenSize.getWidth();
+        int screenHeight = (int) screenSize.getHeight();
+        centerX = screenWidth / 2;
+        centerY = screenHeight / 2;
     }
 
     public void rotationalAngle() {
@@ -21,16 +26,17 @@ class Marker {
 
     public void render(Graphics2D g2) {
         GeneralPath Path = new GeneralPath();
-        this.centerX =  (Math.cos(this.angle) * this.radius);
-        this.centerY =  (Math.sin(this.angle) * this.radius);
-        double s1x = (Math.cos(this.angle + 0.001) * this.radius);
-        double s1y = (Math.sin(this.angle + 0.001) * this.radius);
-        double s2x = (Math.cos(this.angle + 0.0005)) * (this.radius + 0.1);
-        double s2y = (Math.sin(this.angle + 0.0005)) * (this.radius + 0.1);
+        double s1x =  (Math.cos(this.angle) * this.radius) + centerX;
+        double s1y = centerY - (Math.sin(this.angle) * this.radius);
+        double s2x = centerX + (Math.cos(this.angle + 0.001) * this.radius);
+        double s2y = centerY - (Math.sin(this.angle + 0.001) * this.radius);
+        double s3x = centerX + (Math.cos(this.angle + 0.0005)) * (this.radius + 0.1);
+        double s3y = centerY - (Math.sin(this.angle + 0.0005)) * (this.radius + 0.1);
 
         Path.moveTo(centerX , centerY);
         Path.lineTo(s1x, s1y);
         Path.lineTo(s2x, s2y);
+        Path.lineTo(s3x, s3y);
         Path.closePath();
 
         g2.draw(Path);
