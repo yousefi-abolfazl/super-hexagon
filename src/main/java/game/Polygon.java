@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.BasicStroke;
 import java.awt.geom.GeneralPath;
+import java.util.ArrayList;
+import java.awt.Point;
 
 
 public class Polygon {
@@ -13,6 +15,7 @@ public class Polygon {
     private int sides;
     private Color color;
     private double rotationAngle;
+    private ArrayList<Point> vertices;
     
     public Polygon(int centerX, int centerY, int size, int sides, Color color) {
         this.centerX = centerX;
@@ -21,6 +24,7 @@ public class Polygon {
         this.sides = sides;
         this.color = color;
         this.rotationAngle = 0;
+        this.vertices = new ArrayList<>();
     }
     
     public void update(double deltaTime) {
