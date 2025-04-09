@@ -3,7 +3,7 @@ package game;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.BasicStroke;
-import java.awt.geom.GeneralPath;
+import java.awt.geom.Line2D;
 
 public class Obstacle {
     private double distance;
@@ -44,42 +44,28 @@ public class Obstacle {
             return;
         }
         
+        // Save original stroke and color
         g2.setColor(color);
-        g2.setStroke(new BasicStroke((float)thickness, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
+        g2.setStroke(new BasicStroke((float)thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
-        double anglePerSide = 2 * Math.PI / sides;
-        double innerRadius = distance - thickness / 2;
-        double outerRadius = distance + thickness / 2;
-
-        if (innerRadius < 0) innerRadius = 0;
-        if (outerRadius < 0) outerRadius = 0;
-
+        // Draw each line segment except for the open one
         for (int i = 0; i < sides; i++) {
+            // Skip the open segment
             if (i == openSegment) {
                 continue;
             }
-
-            double startAngle = rotationAngle + i * anglePerSide;
-            double endAngle = startAngle + anglePerSide;
-
-            GeneralPath segmentPath = new GeneralPath();
-
-            double x1 = centerX + innerRadius * Math.cos(startAngle);
-            double y1 = centerY + innerRadius * Math.sin(startAngle);
-            double x2 = centerX + outerRadius * Math.cos(startAngle);
-            double y2 = centerY + outerRadius * Math.sin(startAngle);
-            double x3 = centerX + outerRadius * Math.cos(endAngle);
-            double y3 = centerY + outerRadius * Math.sin(endAngle);
-            double x4 = centerX + innerRadius * Math.cos(endAngle);
-            double y4 = centerY + innerRadius * Math.sin(endAngle);
-
-            segmentPath.moveTo(x1, y1);
-            segmentPath.lineTo(x2, y2);
-            segmentPath.lineTo(x3, y3);
-            segmentPath.lineTo(x4, y4);
-            segmentPath.closePath();
-
-            g2.draw(segmentPath);
+            
+            // Calculate the points for this line segment
+            double angle1 = rotationAngle + 2 * Math.PI * i / sides;
+            double angle2 = rotationAngle + 2 * Math.PI * ((i + 1) % sides) / sides;
+            
+            int x1 = (int) (centerX + distance * Math.cos(angle1));
+            int y1 = (int) (centerY + distance * Math.sin(angle1));
+            int x2 = (int) (centerX + distance * Math.cos(angle2));
+            int y2 = (int) (centerY + distance * Math.sin(angle2));
+            
+            // Draw the line
+            g2.draw(new Line2D.Double(x1, y1, x2, y2));
         }
     }
     
@@ -98,12 +84,24 @@ public class Obstacle {
     public int getOpenSegment() {
         return openSegment;
     }
+    
+    public void setOpenSegment(int openSegment) {
+        this.openSegment = openSegment;
+    }
 
     public double getThickness() {
         return thickness;
     }
     
+    public void setThickness(double thickness) {
+        this.thickness = thickness;
+    }
+    
     public double getRotationAngle() {
         return rotationAngle;
+    }
+    
+    public void setRotationSpeed(double rotationSpeed) {
+        this.rotationSpeed = rotationSpeed;
     }
 }
