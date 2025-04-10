@@ -51,8 +51,10 @@ public class Polygon {
             int y = (int) (centerY + size * Math.sin(angle));
             
             if (i == 0) {
+                vertices.add(new Point(x, y));
                 path.moveTo(x, y);
             } else {
+                vertices.add(new Point(x, y));
                 path.lineTo(x, y);
             }
         }
@@ -72,6 +74,10 @@ public class Polygon {
     
     public int getSize() {
         return size;
+    }
+
+    public ArrayList<Point> getVertices() {
+        return vertices;
     }
     
     public double getRotationAngle() {
