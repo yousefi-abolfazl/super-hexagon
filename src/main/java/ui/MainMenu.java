@@ -7,27 +7,27 @@ import java.awt.event.ActionListener;
 import java.awt.geom.GeneralPath;
 
 public class MainMenu {
-    JFrame frame;
-    JPanel mainPanel;
-    JButton startButton;
-    JButton nextButton;
-    JButton preButton;
-    JButton exitButton;
-    JButton settingsButton;
-    int screenWidth;
-    int screenHeight;
-    private SettingsMenu settingsMenu;
+    private JPanel mainPanel;
+    private JButton startButton;
+    private JButton settingsButton;
+    private JButton preButton;
+    private JButton nextButton;
+    private JButton exitButton;
+    private SceneManager sceneManager;
+    private int highScore = 0;
+    private int screenWidth;
+    private int screenHeight;
 
 
     private final Color DARK_BLUE = new Color(0, 0, 60);
     private final Color MEDIUM_BLUE = new Color(40, 40, 160);
     private final Color LIGHT_BLUE = new Color(80, 80, 255);
 
-    public MainMenu(JFrame frame) {
+    public MainMenu(SceneManager manager) {
+        this.sceneManager = manager;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.screenWidth = (int) screenSize.getWidth();
         this.screenHeight = (int) screenSize.getHeight();
-        this.frame = frame;
         this.mainPanel = new HexagonBackgroundPanel();
         this.startButton = createHexButton("START GAME", MEDIUM_BLUE);
         this.nextButton = createArrowButton("NEXT", MEDIUM_BLUE, true);
@@ -37,18 +37,18 @@ public class MainMenu {
     }
 
     public void setupMainMenu() {
-        frame.setSize(screenWidth, screenHeight);
-        System.out.println(screenHeight);
-        System.out.println(screenWidth);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainPanel = new HexagonBackgroundPanel();
+        mainPanel.setLayout(null);
+        // frame.setSize(screenWidth, screenHeight);
+        // frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setupPanel();
         setupButton();
-        settingsExitButton();
+        // settingsExitButton();
         JLabel logoLabel = createLogoLabel();
         mainPanel.add(logoLabel);
         
-        frame.add(mainPanel);
-        frame.setVisible(true);
+        // frame.add(mainPanel);
+        // frame.setVisible(true);
     }
 
     private JLabel createLogoLabel() {
@@ -170,25 +170,16 @@ public class MainMenu {
         settingsButton.setBounds(0, topRowY, buttonWidth, buttonHeight);
         exitButton.setBounds(screenWidth - buttonWidth, topRowY, buttonWidth, buttonHeight);
 
-        exitButton.addActionListener(new ActionListener() {
-           @Override
-           public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-           } 
+        exitButton.addActionListener(e -> {
+            System.exit(0);
         });
 
-        settingsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                openSettingsMenu();
-            }
+        settingsButton.addActionListener(e -> {
+            sceneManager.showSettings();
         });
 
-        startButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mainPanel.setVisible(false);
-            }
+        startButton.addActionListener(e -> {
+            sceneManager.startGame("Normal");
         });
         
         mainPanel.add(startButton);
@@ -378,45 +369,15 @@ public class MainMenu {
         
         return button;
     }
-
-    private void openSettingsMenu() {
-        mainPanel.setVisible(false);
-        
-        SettingsMenu settingsMenu = new SettingsMenu(frame, this);
-        settingsMenu.setupSettingsMenu();
-        
-        this.settingsMenu = settingsMenu;
+    public JPanel getPanel() {
+        return mainPanel;
     }
     
-    public void returnToMainMenu() {
-        if (settingsMenu != null) {
-            int volume = settingsMenu.getVolume();
-            String difficulty = settingsMenu.getDifficulty();
-            boolean fullscreen = settingsMenu.isFullscreen();
-            
-            applySettings(volume, difficulty, fullscreen);
-            
+    public void updateHighScore(int score) {
+        if (score > highScore) {
+            highScore = score;
+            // به‌روزرسانی نمایش امتیاز بالا
+            // ...
         }
-        
-        mainPanel.setVisible(true);
-    }
-    
-    private void applySettings(int volume, String difficulty, boolean fullscreen) {
-        if (fullscreen) {
-            frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        } else {
-            frame.setExtendedState(JFrame.NORMAL);
-            frame.setSize(screenWidth * 3/4, screenHeight * 3/4);
-        }
-    }
-}
-
-class Main {
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Super Hexagon");
-        MainMenu mainf = new MainMenu(frame);
-        mainf.setupMainMenu();
-        });
     }
 }

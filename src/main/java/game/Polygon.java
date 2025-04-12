@@ -35,10 +35,9 @@ public class Polygon {
     
     public void render(Graphics2D g2) {
         GeneralPath path = createPolygonPath();
-        
         g2.setColor(color);
         g2.setStroke(new BasicStroke(4));
-        g2.draw(path);
+        g2.fill(path);
     }
     
     
@@ -74,6 +73,10 @@ public class Polygon {
     
     public int getSize() {
         return size;
+    }
+
+    public int getSides() {
+        return sides;
     }
 
     public ArrayList<Point> getVertices() {

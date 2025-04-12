@@ -15,7 +15,10 @@ public class Game {
     private boolean isGameRunning;
     private double obstacleSpawnTimer;
     private Random random;
-    private final double OBSTACLE_SPAWN_INTERVAL = 2.0; // Spawn every 2 seconds
+    private final double OBSTACLE_SPAWN_INTERVAL = 2.0;
+    private int score;
+    private double spawnRate = 1.0;
+    private double obstacleSpeed = 100;
 
     public Game() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -38,15 +41,15 @@ public class Game {
         if (!isGameRunning || isGameOver) {
             return;
         }
+        score += (int)(deltaTime * 10);
 
-        // Update obstacle spawn timer
         obstacleSpawnTimer += deltaTime;
         if (obstacleSpawnTimer >= OBSTACLE_SPAWN_INTERVAL) {
             spawnNewObstacle();
             obstacleSpawnTimer = 0;
         }
 
-        // Update all obstacles
+        
         Iterator<Obstacle> iterator = obstacles.iterator();
         while (iterator.hasNext()) {
             Obstacle obstacle = iterator.next();
@@ -67,8 +70,46 @@ public class Game {
     }
 
     private boolean checkObstacleCollision(Obstacle obstacle) {
-        // Implementation of collision detection
-        return obstacle.checkCollision(marker.getDistance(), marker.getAngle());
+        double markerDistance = marker.getDistance();
+        double markerAngle = marker.getAngle();
+        double obstacleDistance = obstacle.getDistance();
+        double obstacleThickness = obstacle.getThickness();
+
+        if (Math.abs(markerDistance - obstacleDistance) > obstacleThickness / 2) {
+            return false;
+        }
+
+        int openSegment = obstacle.getOpenSegment();
+        int sides = obstacle.getSides();
+        double rotationAngle = obstacle.getRotationAngle();
+        double segmentAngle = 2 * Math.PI / sides;
+        double normalizedMarkerAngle = normalizeAngle(markerAngle);
+        double openSegmentStart = normalizeAngle(rotationAngle + segmentAngle * openSegment);
+        double openSegmentEnd = normalizeAngle(rotationAngle + segmentAngle * (openSegment + 1));
+        
+        
+        boolean isInOpenSegment;
+        if (openSegmentStart > openSegmentEnd) {
+            isInOpenSegment = (normalizedMarkerAngle >= openSegmentStart || 
+                            normalizedMarkerAngle <= openSegmentEnd);
+        } else {
+            isInOpenSegment = (normalizedMarkerAngle >= openSegmentStart && 
+                            normalizedMarkerAngle <= openSegmentEnd);
+        }
+        
+        if (Math.abs(markerDistance - obstacleDistance) < 30) {
+        System.out.println("Marker angle: " + normalizedMarkerAngle + 
+                      ", Open segment: " + openSegmentStart + " to " + openSegmentEnd +
+                      ", In open segment: " + isInOpenSegment);
+        }
+        return !isInOpenSegment;
+    }
+    private double normalizeAngle(double angle) {
+        double normalized = angle % (2 * Math.PI);
+        if (normalized < 0) {
+            normalized += 2 * Math.PI;
+        }
+        return normalized;
     }
 
     private void spawnNewObstacle() {
@@ -107,6 +148,36 @@ public class Game {
 
     public boolean isGameOver() {
         return isGameOver;
+    }
+
+    public void setSpawnRate(double rate) {
+        this.spawnRate = rate;
+    }
+
+    public void setObstacleSpeed(double speed) {
+        this.obstacleSpeed = speed;
+    }  
+
+
+    private void spawnNewObstacle() {
+        double actualSpawnInterval = OBSTACLE_SPAWN_INTERVAL / spawnRate;
+
+        if (obstacleSpawnTimer >= actualSpawnInterval) {
+            // Generate random properties for the new obstacle
+            int segmentCount = random.nextInt(3) + 1; // 1-3 segments
+            int sides = 6; // Hexagon
+            double rotationOffset = random.nextDouble() * Math.PI * 2; // Random rotation
+            Color color = new Color(
+                    random.nextInt(156) + 100, // Red component (100-255)
+                    random.nextInt(156) + 100, // Green component (100-255)
+                    random.nextInt(156) + 100  // Blue component (100-255)
+            obstacles.add(new Obstacle(centerX, centerY, 700, obstacleSpeed , sides, segmentCount, color));
+            obstacleSpawnTimer = 0;
+            );
+        }
+    }
+    public int getScore() {
+        return score;
     }
 
     public Polygon getPolygon() {

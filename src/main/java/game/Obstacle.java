@@ -3,7 +3,7 @@ package game;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.BasicStroke;
-import java.awt.geom.Line2D;
+import java.awt.geom.GeneralPath;
 
 public class Obstacle {
     private double distance;
@@ -14,7 +14,7 @@ public class Obstacle {
     private int sides;
     private int openSegment;
     private Color color;
-    private double thickness = 20;
+    private double thickness = 40;
     private double rotationAngle;
     private double rotationSpeed = 0.1;
 
@@ -44,16 +44,13 @@ public class Obstacle {
             return;
         }
         
-        g2.setColor(color);
-        g2.setStroke(new BasicStroke((float)thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-
+        GeneralPath path = new GeneralPath();
+        
         for (int i = 0; i < sides; i++) {
-            
             if (i == openSegment) {
                 continue;
             }
             
-         
             double angle1 = rotationAngle + 2 * Math.PI * i / sides;
             double angle2 = rotationAngle + 2 * Math.PI * ((i + 1) % sides) / sides;
             
@@ -62,9 +59,25 @@ public class Obstacle {
             int x2 = (int) (centerX + distance * Math.cos(angle2));
             int y2 = (int) (centerY + distance * Math.sin(angle2));
             
-        
-            g2.draw(new Line2D.Double(x1, y1, x2, y2));
+            path.moveTo(x1, y1);
+            path.lineTo(x2, y2);
         }
+        
+        // افکت درخشش با رسم خطوط با ضخامت و شفافیت مختلف
+        // Color glowColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 70);
+        // g2.setColor(glowColor);
+        // g2.setStroke(new BasicStroke((float)(thickness * 1.5), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        // g2.draw(path);
+        
+        // رسم خط اصلی
+        g2.setColor(color);
+        g2.setStroke(new BasicStroke((float)thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        g2.draw(path);
+        
+        // افزودن نقطه درخشان در مرکز خط
+        g2.setColor(Color.WHITE);
+        g2.setStroke(new BasicStroke((float)(thickness * 0.3), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        g2.draw(path);
     }
     
     public boolean isActive() {
@@ -103,62 +116,7 @@ public class Obstacle {
         this.rotationSpeed = rotationSpeed;
     }
 
-    
-    public boolean checkCollision(double markerDistance, double markerAngle) {
-        
-        if (!isActive) {
-            return false;
-        }
-        
-       
-        double normalizedMarkerAngle = markerAngle % (2 * Math.PI);
-        if (normalizedMarkerAngle < 0) {
-            normalizedMarkerAngle += 2 * Math.PI;
-        }
-        
-        // محاسبه زاویه هر بخش
-        double segmentAngle = 2 * Math.PI / sides;
-        
-        // بررسی فاصله (آیا مارکر در نزدیکی فاصله موانع است)
-        boolean withinDistance = Math.abs(markerDistance - this.distance) < thickness / 2;
-        
-        if (!withinDistance) {
-            return false;  // اگر مارکر در محدوده فاصله موانع نباشد، برخوردی رخ نداده است
-        }
-        
-        // بررسی زاویه
-        for (int i = 0; i < sides; i++) {
-            // اگر این بخش باز است (openSegment)، آن را رد کن
-            if (i == openSegment) {
-                continue;
-            }
-            
-            // محاسبه محدوده زاویه برای این بخش
-            double segmentStartAngle = rotationAngle + segmentAngle * i;
-            double segmentEndAngle = rotationAngle + segmentAngle * (i + 1);
-            
-            // نرمال‌سازی زاویه‌ها
-            segmentStartAngle = segmentStartAngle % (2 * Math.PI);
-            if (segmentStartAngle < 0) segmentStartAngle += 2 * Math.PI;
-            
-            segmentEndAngle = segmentEndAngle % (2 * Math.PI);
-            if (segmentEndAngle < 0) segmentEndAngle += 2 * Math.PI;
-            
-            // بررسی آیا مارکر در این بخش قرار دارد
-            boolean withinSegment;
-            if (segmentStartAngle > segmentEndAngle) {
-                withinSegment = (normalizedMarkerAngle >= segmentStartAngle || 
-                                normalizedMarkerAngle <= segmentEndAngle);
-            } else {
-                withinSegment = (normalizedMarkerAngle >= segmentStartAngle && 
-                                normalizedMarkerAngle <= segmentEndAngle);
-            }
-            
-            if (withinSegment) {
-                return true;  // برخورد تشخیص داده شد
-            }
-        }
-        
-        return false;  // برخوردی تشخیص داده نشد
+    public int getSides() {
+        return sides;
     }
 }

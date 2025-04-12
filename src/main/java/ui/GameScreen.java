@@ -3,40 +3,36 @@ package ui;
 import java.awt.*;
 import javax.swing.*;
 import game.Game;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.Color;
-import java.awt.Dimension;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class GameScreen {
-    private JFrame frame;
-    private GamePanel mainPanel;
+    private GamePanel gamePanel;
     private Game game;
+    private SceneManager sceneManager;
+    private String difficulty = "NORMAL";
     private boolean isRunning;
     private boolean leftKeyPressed = false;
     private boolean rightKeyPressed = false;
 
-    public GameScreen(JFrame frame) {
-        this.frame = frame;
+    public GameScreen(SceneManager manager) {
+        this.sceneManager = manager;
         this.game = new Game();
-        this.mainPanel = new GamePanel();
+        this.gamePanel = new GamePanel();
         this.isRunning = false;
     }
 
     public void setUpGameScreen() {
-        frame.add(mainPanel);
         setupKeyBindings();
         startGameLoop();
     }
 
     private void setupKeyBindings() {
-        mainPanel.setFocusable(true);
-        mainPanel.requestFocusInWindow();
+        gamePanel.setFocusable(true);
+        gamePanel.requestFocusInWindow();
 
-        mainPanel.addKeyListener(new KeyAdapter() {
+        gamePanel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 int keyCode = e.getKeyCode();
@@ -48,7 +44,8 @@ public class GameScreen {
                         rightKeyPressed = true;
                         break;
                     case KeyEvent.VK_ESCAPE:
-                        System.exit(0);
+                        pauseGame();
+                        sceneManager.showMainMenu();
                         break;
                     case KeyEvent.VK_SPACE:
                         if (game.isGameOver()) {
@@ -77,20 +74,23 @@ public class GameScreen {
     private void startGameLoop() {
         isRunning = true;
 
-        // حذف Timer و استفاده از یک thread جداگانه
         Thread gameThread = new Thread(() -> {
             long lastFrameTime = System.nanoTime();
             final double TARGET_FPS = 60.0;
             final double OPTIMAL_TIME = 1000000000 / TARGET_FPS;
 
             while (isRunning) {
+                if (game.isGameOver()) {
+                    stopGame();
+                    sceneManager.gameOver(game.getScore());
+                    break;
+                }
                 long currentTime = System.nanoTime();
                 double deltaTime = (currentTime - lastFrameTime) / 1000000000.0;
                 lastFrameTime = currentTime;
-
-                // آپدیت منطق بازی
+                
                 if (!game.isGameOver()) {
-                    // کنترل حرکت
+                    
                     if (leftKeyPressed) {
                         game.moveMarkerLeft();
                     }
@@ -101,10 +101,10 @@ public class GameScreen {
                     game.update(deltaTime);
                 }
 
-                // درخواست رندر جدید
-                SwingUtilities.invokeLater(() -> mainPanel.repaint());
+                
+                SwingUtilities.invokeLater(() -> gamePanel.repaint());
 
-                // زمان خواب برای کنترل FPS
+                
                 try {
                     long sleepTime = (long)((lastFrameTime - System.nanoTime() + OPTIMAL_TIME) / 1000000);
                     if (sleepTime > 0) {
@@ -121,6 +121,10 @@ public class GameScreen {
         game.startGame();
     }
 
+    public JPanel getPanel() {
+        return gamePanel;
+    }
+
     public void pauseGame() {
         isRunning = false;
     }
@@ -132,6 +136,32 @@ public class GameScreen {
     public void stopGame() {
         isRunning = false;
         game.stopGame();
+    }
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public void resetGame() {
+        // ایجاد نمونه جدید بازی با تنظیمات مناسب
+        game = new Game();
+        
+        // تنظیم سختی
+        switch (difficulty) {
+            case "EASY":
+                game.setSpawnRate(1.5);
+                game.setObstacleSpeed(80);
+                break;
+            case "NORMAL":
+                game.setSpawnRate(1.0);
+                game.setObstacleSpeed(100);
+                break;
+            case "HARD":
+                game.setSpawnRate(0.7);
+                game.setObstacleSpeed(120);
+                break;
+        }
+
+        startGameLoop();
     }
 
     private class GamePanel extends JPanel {
@@ -146,12 +176,12 @@ public class GameScreen {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
             
-            // تنظیمات رندرینگ را فقط یک‌بار انجام دهید
+            
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setColor(Color.BLACK);
             g2.fillRect(0, 0, getWidth(), getHeight());
 
-            // رندر بازی
+            
             if (game != null) {
                 game.render(g2);
                 
@@ -162,7 +192,6 @@ public class GameScreen {
         }
 
         private void renderGameOverMessage(Graphics2D g2) {
-            // جداسازی منطق رندر پیام گیم اور برای خوانایی بهتر
             g2.setColor(Color.RED);
             g2.setFont(new Font("Arial", Font.BOLD, 36));
             FontMetrics fm = g2.getFontMetrics();
