@@ -11,7 +11,7 @@ public class Marker {
     double angle;
     double markerx;
     double markery;
-    private final double ROTATION_SPEED = 0.05; // سرعت چرخش (می‌توانید تنظیم کنید)
+    private final double ROTATION_SPEED = 0.05; 
 
     public Marker(int distance, double angle) {
         this.distance = distance;
@@ -23,12 +23,10 @@ public class Marker {
         centerY = screenHeight / 2;
     }
 
-    // حرکت به چپ (در جهت ساعتگرد)
     public void moveLeft() {
         this.angle += ROTATION_SPEED;
     }
     
-    // حرکت به راست (در جهت پادساعتگرد)
     public void moveRight() {
         this.angle -= ROTATION_SPEED;
     }
@@ -60,12 +58,10 @@ public class Marker {
         return new Point((int)markerx, (int)markery);
     }
     
-    // گرفتن زاویه فعلی
     public double getAngle() {
         return angle;
     }
     
-    // تنظیم زاویه
     public void setAngle(double angle) {
         this.angle = angle;
     }

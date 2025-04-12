@@ -2,14 +2,10 @@ package ui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class SettingsMenu {
-    private JFrame frame;
-    private JPanel settingsPanel;
-    private MainMenu mainMenu;
-    
+    private SceneManager sceneManager;
+    private JPanel settingsPanel;    
     private JSlider volumeSlider;
     private JComboBox<String> difficultyComboBox;
     private JButton backButton;
@@ -18,10 +14,10 @@ public class SettingsMenu {
     private final Color DARK_BLUE = new Color(0, 0, 60);
     private final Color MEDIUM_BLUE = new Color(40, 40, 160);
     
-    public SettingsMenu(JFrame frame, MainMenu mainMenu) {
-        this.frame = frame;
-        this.mainMenu = mainMenu;
+    public SettingsMenu(SceneManager manager) {
+        this.sceneManager = manager;
         this.settingsPanel = new JPanel();
+        setupSettingsMenu();
     }
     
     public void setupSettingsMenu() {
@@ -75,14 +71,9 @@ public class SettingsMenu {
         backButton.setFocusPainted(false);
         backButton.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
         backButton.setBounds(screenWidth/2 - componentWidth/2, spacing + margin*18, componentWidth, height*2);
-        
-        
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                settingsPanel.setVisible(false);
-                mainMenu.returnToMainMenu();
-            }
+
+        backButton.addActionListener(e -> {
+            sceneManager.showMainMenu();
         });
 
         settingsPanel.add(titleLabel);
@@ -92,8 +83,7 @@ public class SettingsMenu {
         settingsPanel.add(difficultyComboBox);
         settingsPanel.add(fullscreenCheckbox);
         settingsPanel.add(backButton);
-        
-        frame.add(settingsPanel);
+
         settingsPanel.setVisible(true);
     }
     
@@ -107,5 +97,9 @@ public class SettingsMenu {
     
     public boolean isFullscreen() {
         return fullscreenCheckbox.isSelected();
+    }
+
+    public JPanel getPanel() {
+        return settingsPanel;
     }
 }

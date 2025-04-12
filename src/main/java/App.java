@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import game.*;
 import ui.*;
 
 public class App {
@@ -12,7 +11,7 @@ public class App {
             
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             gameFrame.setSize(screenSize.width, screenSize.height);
-            gameFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            //gameFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             SceneManager sceneManager = SceneManager.getInstance();
             sceneManager.initialize(gameFrame);
             

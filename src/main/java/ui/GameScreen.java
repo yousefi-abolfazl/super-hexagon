@@ -1,8 +1,14 @@
+//TODO: Improve the UI
+//TODO: Add a music system
+//BUG: The game is not stopping when the marker hits the obstacle
+//BUG: marker is not moving
+
+
 package ui;
 
 import java.awt.*;
 import javax.swing.*;
-import game.Game;
+import game.*;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -142,10 +148,8 @@ public class GameScreen {
     }
 
     public void resetGame() {
-        // ایجاد نمونه جدید بازی با تنظیمات مناسب
         game = new Game();
         
-        // تنظیم سختی
         switch (difficulty) {
             case "EASY":
                 game.setSpawnRate(1.5);
@@ -168,7 +172,7 @@ public class GameScreen {
         public GamePanel() {
             setPreferredSize(new Dimension(800, 600));
             setBackground(Color.BLACK);
-            setDoubleBuffered(true); // فعال کردن double buffering
+            setDoubleBuffered(true);
         }
 
         @Override

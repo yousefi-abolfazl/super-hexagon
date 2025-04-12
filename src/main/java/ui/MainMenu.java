@@ -2,8 +2,6 @@ package ui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.GeneralPath;
 
 public class MainMenu {
@@ -34,21 +32,16 @@ public class MainMenu {
         this.preButton = createArrowButton("PREVIOUS", MEDIUM_BLUE, false);
         this.exitButton = new JButton("EXIT");
         this.settingsButton = new JButton("SETTINGS");
+        setupMainMenu();
     }
 
     public void setupMainMenu() {
         mainPanel = new HexagonBackgroundPanel();
         mainPanel.setLayout(null);
-        // frame.setSize(screenWidth, screenHeight);
-        // frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setupPanel();
         setupButton();
-        // settingsExitButton();
         JLabel logoLabel = createLogoLabel();
         mainPanel.add(logoLabel);
-        
-        // frame.add(mainPanel);
-        // frame.setVisible(true);
     }
 
     private JLabel createLogoLabel() {
@@ -376,8 +369,6 @@ public class MainMenu {
     public void updateHighScore(int score) {
         if (score > highScore) {
             highScore = score;
-            // به‌روزرسانی نمایش امتیاز بالا
-            // ...
         }
     }
 }

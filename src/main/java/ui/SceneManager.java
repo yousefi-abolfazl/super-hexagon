@@ -1,8 +1,10 @@
+//TODO: Improve the UI
+//BUG: Delete Arrow keys
+
+
 package ui;
 
 import javax.swing.*;
-import java.awt.*;
-import game.*;
 
 public class SceneManager {
     private JFrame mainFrame;
@@ -12,7 +14,6 @@ public class SceneManager {
     private SettingsMenu settingsMenu;
     private static SceneManager instance;
     
-    // الگوی Singleton برای دسترسی آسان
     public static SceneManager getInstance() {
         if (instance == null) {
             instance = new SceneManager();
@@ -25,12 +26,10 @@ public class SceneManager {
     public void initialize(JFrame frame) {
         this.mainFrame = frame;
         
-        // ایجاد صحنه‌ها
         mainMenu = new MainMenu(this);
         gameScreen = new GameScreen(this);
         settingsMenu = new SettingsMenu(this);
         
-        // شروع با منوی اصلی
         showMainMenu();
     }
     
@@ -39,7 +38,7 @@ public class SceneManager {
     }
     
     public void startGame(String difficulty) {
-        // انتقال تنظیمات به بازی
+
         gameScreen.setDifficulty(difficulty);
         gameScreen.resetGame();
         switchScene(gameScreen.getPanel());
@@ -50,7 +49,7 @@ public class SceneManager {
     }
     
     public void gameOver(int score) {
-        // ارسال امتیاز به منوی اصلی
+
         mainMenu.updateHighScore(score);
         switchScene(mainMenu.getPanel());
     }
@@ -63,11 +62,10 @@ public class SceneManager {
         mainFrame.add(currentScene);
         mainFrame.revalidate();
         mainFrame.repaint();
-        // اطمینان از فوکوس صحنه جدید
+
         currentScene.requestFocusInWindow();
     }
     
-    // متدهای دسترسی به کامپوننت‌ها
     public JFrame getFrame() {
         return mainFrame;
     }

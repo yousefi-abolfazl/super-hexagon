@@ -1,3 +1,7 @@
+//TODO: Add rotation to the obstacles
+//TODO: Add a score system UI
+//TODO: Add a game over screen
+
 package game;
 
 import java.awt.*;
@@ -27,7 +31,7 @@ public class Game {
 
         marker = new Marker(150, 0);
         obstacles = new ArrayList<>();
-        // Initial obstacle
+
         obstacles.add(new Obstacle(centerX, centerY, 700, 2, 6, 0, Color.RED));
         polygon = new Polygon(centerX, centerY, 150, 6, Color.WHITE);
 
@@ -55,13 +59,11 @@ public class Game {
             Obstacle obstacle = iterator.next();
             obstacle.update(deltaTime);
 
-            // Remove obstacles that are too close to the center
             if (obstacle.getDistance() <= 150) {
                 iterator.remove();
                 continue;
             }
 
-            // Check for collision with this obstacle
             if (checkObstacleCollision(obstacle)) {
                 isGameOver = true;
                 break;
@@ -111,27 +113,11 @@ public class Game {
         }
         return normalized;
     }
-
-    private void spawnNewObstacle() {
-        // Generate random properties for the new obstacle
-        int segmentCount = random.nextInt(3) + 1; // 1-3 segments
-        int sides = 6; // Hexagon
-        double rotationOffset = random.nextDouble() * Math.PI * 2; // Random rotation
-        Color color = new Color(
-                random.nextInt(156) + 100, // Red component (100-255)
-                random.nextInt(156) + 100, // Green component (100-255)
-                random.nextInt(156) + 100  // Blue component (100-255)
-        );
-
-        // Create a new obstacle starting from far away
-        obstacles.add(new Obstacle(centerX, centerY, 700.0, 100 , sides, segmentCount, color));
-    }
-
+    
     public void render(Graphics2D g2) {
         polygon.render(g2);
         marker.render(g2);
 
-        // Render all obstacles
         for (Obstacle obstacle : obstacles) {
             obstacle.render(g2);
         }
@@ -163,17 +149,16 @@ public class Game {
         double actualSpawnInterval = OBSTACLE_SPAWN_INTERVAL / spawnRate;
 
         if (obstacleSpawnTimer >= actualSpawnInterval) {
-            // Generate random properties for the new obstacle
+            
             int segmentCount = random.nextInt(3) + 1; // 1-3 segments
-            int sides = 6; // Hexagon
+            int sides = 6; 
             double rotationOffset = random.nextDouble() * Math.PI * 2; // Random rotation
             Color color = new Color(
                     random.nextInt(156) + 100, // Red component (100-255)
                     random.nextInt(156) + 100, // Green component (100-255)
-                    random.nextInt(156) + 100  // Blue component (100-255)
+                    random.nextInt(156) + 100);  // Blue component (100-255)
             obstacles.add(new Obstacle(centerX, centerY, 700, obstacleSpeed , sides, segmentCount, color));
             obstacleSpawnTimer = 0;
-            );
         }
     }
     public int getScore() {
