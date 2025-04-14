@@ -31,6 +31,7 @@ public class SceneManager {
         settingsMenu = new SettingsMenu(this);
         
         showMainMenu();
+        //settingsMenu.music();
     }
     
     public void showMainMenu() {

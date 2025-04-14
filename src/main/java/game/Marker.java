@@ -2,16 +2,15 @@ package game;
 
 import java.awt.*;
 import java.awt.geom.*;
-import java.awt.Point;
 
 public class Marker {
-    double centerX;
-    double centerY;
-    int distance;
-    double angle;
-    double markerx;
-    double markery;
-    private final double ROTATION_SPEED = 0.05; 
+    private double centerX;
+    private double centerY;
+    private int distance;
+    private double angle;
+    private double markerx;
+    private double markery;
+    private double moveSpeed = 3.0; 
 
     public Marker(int distance, double angle) {
         this.distance = distance;
@@ -23,12 +22,18 @@ public class Marker {
         centerY = screenHeight / 2;
     }
 
-    public void moveLeft() {
-        this.angle += ROTATION_SPEED;
+    public void moveLeft(double deltaTime) {
+        angle -= moveSpeed * deltaTime;
+        if (this.angle > 2 * Math.PI) {
+            this.angle -= 2 * Math.PI;
+        }
     }
     
-    public void moveRight() {
-        this.angle -= ROTATION_SPEED;
+    public void moveRight(double deltaTime) {
+        angle -= moveSpeed * deltaTime;
+        if (this.angle < 0) {
+            this.angle += 2 * Math.PI;
+        }
     }
 
     public void render(Graphics2D g2) {

@@ -22,7 +22,7 @@ public class Game {
     private final double OBSTACLE_SPAWN_INTERVAL = 2.0;
     private int score;
     private double spawnRate = 1.0;
-    private double obstacleSpeed = 100;
+    private double gameSpeed = 1.0;
 
     public Game() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -32,7 +32,7 @@ public class Game {
         marker = new Marker(150, 0);
         obstacles = new ArrayList<>();
 
-        obstacles.add(new Obstacle(centerX, centerY, 700, 2, 6, 0, Color.RED));
+        obstacles.add(new Obstacle(centerX, centerY, 700, 2, 6, 0, 0, Color.RED));
         polygon = new Polygon(centerX, centerY, 150, 6, Color.WHITE);
 
         isGameOver = false;
@@ -85,22 +85,21 @@ public class Game {
         int sides = obstacle.getSides();
         double rotationAngle = obstacle.getRotationAngle();
         double segmentAngle = 2 * Math.PI / sides;
-        double normalizedMarkerAngle = normalizeAngle(markerAngle);
         double openSegmentStart = normalizeAngle(rotationAngle + segmentAngle * openSegment);
         double openSegmentEnd = normalizeAngle(rotationAngle + segmentAngle * (openSegment + 1));
         
         
         boolean isInOpenSegment;
         if (openSegmentStart > openSegmentEnd) {
-            isInOpenSegment = (normalizedMarkerAngle >= openSegmentStart || 
-                            normalizedMarkerAngle <= openSegmentEnd);
+            isInOpenSegment = (markerAngle >= openSegmentStart || 
+                            markerAngle <= openSegmentEnd);
         } else {
-            isInOpenSegment = (normalizedMarkerAngle >= openSegmentStart && 
-                            normalizedMarkerAngle <= openSegmentEnd);
+            isInOpenSegment = (markerAngle >= openSegmentStart && 
+                            markerAngle <= openSegmentEnd);
         }
         
         if (Math.abs(markerDistance - obstacleDistance) < 30) {
-        System.out.println("Marker angle: " + normalizedMarkerAngle + 
+        System.out.println("Marker angle: " + markerAngle + 
                       ", Open segment: " + openSegmentStart + " to " + openSegmentEnd +
                       ", In open segment: " + isInOpenSegment);
         }
@@ -140,24 +139,20 @@ public class Game {
         this.spawnRate = rate;
     }
 
-    public void setObstacleSpeed(double speed) {
-        this.obstacleSpeed = speed;
-    }  
-
-
     private void spawnNewObstacle() {
         double actualSpawnInterval = OBSTACLE_SPAWN_INTERVAL / spawnRate;
-
+        double baseObstacleSpeed = 100;
+        double currentObstacleSpeed = baseObstacleSpeed * gameSpeed;
         if (obstacleSpawnTimer >= actualSpawnInterval) {
             
             int segmentCount = random.nextInt(3) + 1; // 1-3 segments
             int sides = 6; 
-            double rotationOffset = random.nextDouble() * Math.PI * 2; // Random rotation
+            double rotationAngle = random.nextDouble() * Math.PI * 2; // Random rotation
             Color color = new Color(
                     random.nextInt(156) + 100, // Red component (100-255)
                     random.nextInt(156) + 100, // Green component (100-255)
                     random.nextInt(156) + 100);  // Blue component (100-255)
-            obstacles.add(new Obstacle(centerX, centerY, 700, obstacleSpeed , sides, segmentCount, color));
+            obstacles.add(new Obstacle(centerX, centerY, 700, currentObstacleSpeed , sides, segmentCount, rotationAngle, color));
             obstacleSpawnTimer = 0;
         }
     }
@@ -169,15 +164,24 @@ public class Game {
         return polygon;
     }
 
-    public void moveMarkerLeft() {
+    public void moveMarkerLeft(double deltaTime) {
         if (marker != null && isGameRunning && !isGameOver) {
-            marker.moveLeft();
+            System.out.println("moveLeft"); //logs
+            marker.moveLeft(deltaTime);
         }
     }
 
-    public void moveMarkerRight() {
+    public void moveMarkerRight(double deltaTime) {
         if (marker != null && isGameRunning && !isGameOver) {
-            marker.moveRight();
+            System.out.println("moveRight"); //logs
+            marker.moveRight(deltaTime);
         }
+    }
+
+    public double getGameSpeed() {
+        return gameSpeed;
+    }
+    public void setGameSpeed(double gameSpeed) {
+        this.gameSpeed = gameSpeed;
     }
 }

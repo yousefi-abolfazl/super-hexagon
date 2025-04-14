@@ -1,15 +1,21 @@
 package ui;
 
+
 import javax.swing.*;
+import javazoom.jl.player.Player;
 import java.awt.*;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
 
 public class SettingsMenu {
     private SceneManager sceneManager;
     private JPanel settingsPanel;    
     private JSlider volumeSlider;
+    private Player player;
+    private Thread musicThread;
     private JComboBox<String> difficultyComboBox;
     private JButton backButton;
-    private JCheckBox fullscreenCheckbox;
+    private JCheckBox musicCheckBox;
     
     private final Color DARK_BLUE = new Color(0, 0, 60);
     private final Color MEDIUM_BLUE = new Color(40, 40, 160);
@@ -58,11 +64,14 @@ public class SettingsMenu {
         difficultyComboBox = new JComboBox<>(difficulties);
         difficultyComboBox.setBounds(screenWidth/2, spacing + margin*9, componentWidth, height);
         
-        fullscreenCheckbox = new JCheckBox("Fullscreen");
-        fullscreenCheckbox.setFont(new Font("Arial", Font.BOLD, (int)(screenHeight * 0.03)));
-        fullscreenCheckbox.setForeground(Color.WHITE);
-        fullscreenCheckbox.setBackground(DARK_BLUE);
-        fullscreenCheckbox.setBounds(screenWidth/2 - componentWidth/2, spacing + margin*12, componentWidth, height);
+        musicCheckBox = new JCheckBox("Music");
+        musicCheckBox.setFont(new Font("Arial", Font.BOLD, (int)(screenHeight * 0.03)));
+        musicCheckBox.setForeground(Color.WHITE);
+        musicCheckBox.setBackground(DARK_BLUE);
+        musicCheckBox.setBounds(screenWidth/2 - componentWidth/2, spacing + margin*12, componentWidth, height);
+        musicCheckBox.setHorizontalAlignment(SwingConstants.RIGHT);
+        musicCheckBox.setHorizontalTextPosition(SwingConstants.LEFT);
+        musicCheckBox.setSelected(true);
         
         backButton = new JButton("Back");
         backButton.setFont(new Font("Arial", Font.BOLD, (int)(screenHeight * 0.03)));
@@ -81,7 +90,7 @@ public class SettingsMenu {
         settingsPanel.add(volumeSlider);
         settingsPanel.add(difficultyLabel);
         settingsPanel.add(difficultyComboBox);
-        settingsPanel.add(fullscreenCheckbox);
+        settingsPanel.add(musicCheckBox);
         settingsPanel.add(backButton);
 
         settingsPanel.setVisible(true);
@@ -95,11 +104,38 @@ public class SettingsMenu {
         return (String) difficultyComboBox.getSelectedItem();
     }
     
-    public boolean isFullscreen() {
-        return fullscreenCheckbox.isSelected();
+    public boolean hasMusic() {
+        return musicCheckBox.isSelected();
     }
 
     public JPanel getPanel() {
         return settingsPanel;
+    }
+
+    public void music() {
+        //stopMusic();
+        musicThread = new Thread(() -> {
+            while (hasMusic()) {
+                try {
+                    InputStream inputStream = getClass().getResourceAsStream("/sounds/Courtesy.mp3");
+                    if (inputStream == null) {
+                        System.out.println("File not founded");
+                        break;
+                    }
+                    BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
+
+                    player = new Player(bufferedStream);
+                    player.play();
+
+                } catch (Exception e) {
+                    if (hasMusic()) {
+                        e.printStackTrace();
+                        System.out.println("Failed to play music " + e.getMessage());
+                    }
+                    break;
+                }
+            }
+        });
+        musicThread.start();
     }
 }

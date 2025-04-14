@@ -1,5 +1,5 @@
 //TODO: Improve the UI
-//TODO: Add a music system
+//[ ]: Add a music system
 //BUG: The game is not stopping when the marker hits the obstacle
 //BUG: marker is not moving
 
@@ -98,10 +98,10 @@ public class GameScreen {
                 if (!game.isGameOver()) {
                     
                     if (leftKeyPressed) {
-                        game.moveMarkerLeft();
+                        game.moveMarkerLeft(deltaTime);
                     }
                     if (rightKeyPressed) {
-                        game.moveMarkerRight();
+                        game.moveMarkerRight(deltaTime);
                     }
 
                     game.update(deltaTime);
@@ -149,19 +149,20 @@ public class GameScreen {
 
     public void resetGame() {
         game = new Game();
-        
+        gamePanel.requestFocusInWindow();
+
         switch (difficulty) {
             case "EASY":
                 game.setSpawnRate(1.5);
-                game.setObstacleSpeed(80);
+                game.setGameSpeed(1.0);
                 break;
             case "NORMAL":
                 game.setSpawnRate(1.0);
-                game.setObstacleSpeed(100);
+                game.setGameSpeed(2.0);
                 break;
             case "HARD":
                 game.setSpawnRate(0.7);
-                game.setObstacleSpeed(120);
+                game.setGameSpeed(3.0);
                 break;
         }
 
@@ -173,6 +174,7 @@ public class GameScreen {
             setPreferredSize(new Dimension(800, 600));
             setBackground(Color.BLACK);
             setDoubleBuffered(true);
+            setFocusable(true);
         }
 
         @Override

@@ -18,7 +18,7 @@ public class Obstacle {
     private double rotationAngle;
     private double rotationSpeed = 0.1;
 
-    public Obstacle(int centerX, int centerY, double distance, double speed, int sides, int openSegment, Color color) {
+    public Obstacle(int centerX, int centerY, double distance, double speed, int sides, int openSegment, double rotationAngle, Color color) {
         this.centerX = centerX;
         this.centerY = centerY;
         this.distance = distance;
@@ -27,7 +27,7 @@ public class Obstacle {
         this.isActive = true;
         this.openSegment = openSegment;
         this.color = color;
-        this.rotationAngle = 0;
+        this.rotationAngle = rotationAngle;
     }
     
     public void update(double deltaTime) {
@@ -63,18 +63,10 @@ public class Obstacle {
             path.lineTo(x2, y2);
         }
         
-        // افکت درخشش با رسم خطوط با ضخامت و شفافیت مختلف
-        // Color glowColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 70);
-        // g2.setColor(glowColor);
-        // g2.setStroke(new BasicStroke((float)(thickness * 1.5), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        // g2.draw(path);
-        
-        // رسم خط اصلی
         g2.setColor(color);
         g2.setStroke(new BasicStroke((float)thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g2.draw(path);
-        
-        // افزودن نقطه درخشان در مرکز خط
+
         g2.setColor(Color.WHITE);
         g2.setStroke(new BasicStroke((float)(thickness * 0.3), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g2.draw(path);
