@@ -27,6 +27,7 @@ public class GameScreen {
         this.game = new Game();
         this.gamePanel = new GamePanel();
         this.isRunning = false;
+        setUpGameScreen();
     }
 
     public void setUpGameScreen() {
@@ -37,7 +38,7 @@ public class GameScreen {
     private void setupKeyBindings() {
         gamePanel.setFocusable(true);
         gamePanel.requestFocusInWindow();
-
+        
         gamePanel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -65,6 +66,8 @@ public class GameScreen {
             @Override
             public void keyReleased(KeyEvent e) {
                 int keyCode = e.getKeyCode();
+                System.out.println("کلید رها شد: " + KeyEvent.getKeyText(keyCode));
+                
                 switch (keyCode) {
                     case KeyEvent.VK_LEFT:
                         leftKeyPressed = false;
@@ -82,7 +85,7 @@ public class GameScreen {
 
         Thread gameThread = new Thread(() -> {
             long lastFrameTime = System.nanoTime();
-            final double TARGET_FPS = 60.0;
+            final double TARGET_FPS = 120.0;
             final double OPTIMAL_TIME = 1000000000 / TARGET_FPS;
 
             while (isRunning) {
@@ -91,12 +94,15 @@ public class GameScreen {
                     sceneManager.gameOver(game.getScore());
                     break;
                 }
+
                 long currentTime = System.nanoTime();
                 double deltaTime = (currentTime - lastFrameTime) / 1000000000.0;
+                
+                deltaTime = Math.min(deltaTime, 0.05);
+                
                 lastFrameTime = currentTime;
                 
                 if (!game.isGameOver()) {
-                    
                     if (leftKeyPressed) {
                         game.moveMarkerLeft(deltaTime);
                     }
@@ -106,15 +112,15 @@ public class GameScreen {
 
                     game.update(deltaTime);
                 }
-
                 
                 SwingUtilities.invokeLater(() -> gamePanel.repaint());
-
                 
                 try {
                     long sleepTime = (long)((lastFrameTime - System.nanoTime() + OPTIMAL_TIME) / 1000000);
                     if (sleepTime > 0) {
                         Thread.sleep(sleepTime);
+                    } else {
+                        Thread.sleep(1);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -123,6 +129,7 @@ public class GameScreen {
         });
 
         gameThread.setDaemon(true);
+        gameThread.setPriority(Thread.MAX_PRIORITY);
         gameThread.start();
         game.startGame();
     }
@@ -149,6 +156,8 @@ public class GameScreen {
 
     public void resetGame() {
         game = new Game();
+        
+        gamePanel.requestFocus();
         gamePanel.requestFocusInWindow();
 
         switch (difficulty) {
@@ -162,11 +171,17 @@ public class GameScreen {
                 break;
             case "HARD":
                 game.setSpawnRate(0.7);
-                game.setGameSpeed(3.0);
+                game.setGameSpeed(30.0);
                 break;
         }
 
         startGameLoop();
+
+        SwingUtilities.invokeLater(() -> {
+            gamePanel.requestFocus();
+            gamePanel.requestFocusInWindow();
+        
+        });
     }
 
     private class GamePanel extends JPanel {
@@ -204,6 +219,19 @@ public class GameScreen {
             String gameOverMessage = "Game Over - Press SPACE to restart";
             int textWidth = fm.stringWidth(gameOverMessage);
             g2.drawString(gameOverMessage, getWidth() / 2 - textWidth / 2, getHeight() / 2);
+        }
+    }
+
+    public void applySettingGame(SettingsMenu setting) {
+        if (setting != null) {
+            String difficultyText = setting.getDifficulty();
+            setDifficulty(difficultyText);
+            
+            if (setting.hasMusic()) {
+                setting.music();
+            } else {
+                setting.stopMusic();
+            }
         }
     }
 }

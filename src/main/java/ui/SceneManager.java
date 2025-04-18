@@ -1,5 +1,4 @@
 //TODO: Improve the UI
-//BUG: Delete Arrow keys
 
 
 package ui;
@@ -29,18 +28,27 @@ public class SceneManager {
         mainMenu = new MainMenu(this);
         gameScreen = new GameScreen(this);
         settingsMenu = new SettingsMenu(this);
-        
         showMainMenu();
-        //settingsMenu.music();
+        
+        gameScreen.applySettingGame(settingsMenu);
+        
+        // Try to play music when initializing
+        try {
+            if (settingsMenu.hasMusic()) {
+                settingsMenu.music();
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to play initial music: " + e.getMessage());
+        }
     }
     
     public void showMainMenu() {
         switchScene(mainMenu.getPanel());
     }
     
-    public void startGame(String difficulty) {
+    public void startGame() {
 
-        gameScreen.setDifficulty(difficulty);
+        gameScreen.applySettingGame(settingsMenu);
         gameScreen.resetGame();
         switchScene(gameScreen.getPanel());
     }
@@ -63,7 +71,6 @@ public class SceneManager {
         mainFrame.add(currentScene);
         mainFrame.revalidate();
         mainFrame.repaint();
-
         currentScene.requestFocusInWindow();
     }
     

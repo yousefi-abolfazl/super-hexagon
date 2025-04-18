@@ -8,8 +8,6 @@ public class MainMenu {
     private JPanel mainPanel;
     private JButton startButton;
     private JButton settingsButton;
-    private JButton preButton;
-    private JButton nextButton;
     private JButton exitButton;
     private SceneManager sceneManager;
     private int highScore = 0;
@@ -28,8 +26,6 @@ public class MainMenu {
         this.screenHeight = (int) screenSize.getHeight();
         this.mainPanel = new HexagonBackgroundPanel();
         this.startButton = createHexButton("START GAME", MEDIUM_BLUE);
-        this.nextButton = createArrowButton("NEXT", MEDIUM_BLUE, true);
-        this.preButton = createArrowButton("PREVIOUS", MEDIUM_BLUE, false);
         this.exitButton = new JButton("EXIT");
         this.settingsButton = new JButton("SETTINGS");
         setupMainMenu();
@@ -136,14 +132,9 @@ public class MainMenu {
     
     public void setupButton() {
         int buttonWidth = (int)(screenWidth * 0.12);
-        int buttonHeight = (int)(screenHeight * 0.07);
-        int spacing = (int)(screenWidth * 0.02);
-    
+        int buttonHeight = (int)(screenHeight * 0.07);    
         
         int centerX = (screenWidth / 2) - (buttonWidth / 2);
-        int leftX = centerX - buttonWidth - spacing;
-        int rightX = centerX + buttonWidth + spacing;
-
         int mainRowY = (int)(screenHeight * 0.6);
         int topRowY = (int)(screenHeight * 0.1);
         
@@ -151,15 +142,10 @@ public class MainMenu {
         
         Font buttonFont = new Font("Arial", Font.BOLD, fontSize);
         startButton.setFont(buttonFont);
-        preButton.setFont(buttonFont);
-        nextButton.setFont(buttonFont);
         settingsButton.setFont(buttonFont);
         exitButton.setFont(buttonFont);
         
         startButton.setBounds(centerX, mainRowY, buttonWidth, buttonHeight);
-        preButton.setBounds(leftX, mainRowY, buttonWidth, buttonHeight);
-        nextButton.setBounds(rightX, mainRowY, buttonWidth, buttonHeight);
-        
         settingsButton.setBounds(0, topRowY, buttonWidth, buttonHeight);
         exitButton.setBounds(screenWidth - buttonWidth, topRowY, buttonWidth, buttonHeight);
 
@@ -172,12 +158,10 @@ public class MainMenu {
         });
 
         startButton.addActionListener(e -> {
-            sceneManager.startGame("Normal");
+            sceneManager.startGame();
         });
         
         mainPanel.add(startButton);
-        mainPanel.add(nextButton);
-        mainPanel.add(preButton);
         mainPanel.add(exitButton);
         mainPanel.add(settingsButton);
     }
@@ -267,100 +251,6 @@ public class MainMenu {
         exitButton.setForeground(Color.WHITE);
         exitButton.setFocusPainted(false);
         exitButton.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
-    }
-
-    private JButton createArrowButton(String text, Color color, boolean isRightArrow) {
-        JButton button = new JButton(text) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                
-                int w = getWidth();
-                int h = getHeight();
-                
-                int indent = h / 2;
-                
-                GeneralPath path = new GeneralPath();
-                if (isRightArrow) {
-                    path.moveTo(0, 0);
-                    path.lineTo(w - indent, 0);
-                    path.lineTo(w, h / 2);
-                    path.lineTo(w - indent, h);
-                    path.lineTo(0, h);
-                } else {
-                    path.moveTo(indent, 0);
-                    path.lineTo(w, 0);
-                    path.lineTo(w, h);
-                    path.lineTo(indent, h);
-                    path.lineTo(0, h / 2);
-                }
-                path.closePath();
-                
-                GradientPaint gradient = new GradientPaint(
-                    0, 0, color.brighter(),
-                    0, h, color.darker()
-                );
-                g2.setPaint(gradient);
-                g2.fill(path);
-                
-                g2.setColor(Color.WHITE);
-                g2.setStroke(new BasicStroke(2));
-                g2.draw(path);
-                
-                g2.setColor(Color.WHITE);
-                int arrowSize = h / 3;
-                int arrowX = (w - arrowSize) / 2;
-                int arrowY = (h - arrowSize) / 2;
-                
-                GeneralPath arrow = new GeneralPath();
-                if (isRightArrow) {
-                    arrow.moveTo(arrowX, arrowY);
-                    arrow.lineTo(arrowX + arrowSize, arrowY + arrowSize / 2);
-                    arrow.lineTo(arrowX, arrowY + arrowSize);
-                } else {
-                    arrow.moveTo(arrowX + arrowSize, arrowY);
-                    arrow.lineTo(arrowX, arrowY + arrowSize / 2);
-                    arrow.lineTo(arrowX + arrowSize, arrowY + arrowSize);
-                }
-                arrow.closePath();
-                g2.fill(arrow);
-                
-                g2.dispose();
-            }
-            
-            @Override
-            public boolean contains(int x, int y) {
-                int w = getWidth();
-                int h = getHeight();
-                int indent = h / 2;
-                
-                GeneralPath path = new GeneralPath();
-                if (isRightArrow) {
-                    path.moveTo(0, 0);
-                    path.lineTo(w - indent, 0);
-                    path.lineTo(w, h / 2);
-                    path.lineTo(w - indent, h);
-                    path.lineTo(0, h);
-                } else {
-                    path.moveTo(indent, 0);
-                    path.lineTo(w, 0);
-                    path.lineTo(w, h);
-                    path.lineTo(indent, h);
-                    path.lineTo(0, h / 2);
-                }
-                path.closePath();
-                
-                return path.contains(x, y);
-            }
-        };
-        
-        button.setOpaque(false);
-        button.setContentAreaFilled(false);
-        button.setBorderPainted(false);
-        button.setFocusPainted(false);
-        
-        return button;
     }
     public JPanel getPanel() {
         return mainPanel;

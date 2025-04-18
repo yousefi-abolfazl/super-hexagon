@@ -77,6 +77,9 @@ public class Game {
         double obstacleDistance = obstacle.getDistance();
         double obstacleThickness = obstacle.getThickness();
 
+        markerAngle = 2 * Math.PI - marker.getAngle(); //check
+        markerAngle = normalizeAngle(markerAngle); //check
+
         if (Math.abs(markerDistance - obstacleDistance) > obstacleThickness / 2) {
             return false;
         }
@@ -88,7 +91,6 @@ public class Game {
         double openSegmentStart = normalizeAngle(rotationAngle + segmentAngle * openSegment);
         double openSegmentEnd = normalizeAngle(rotationAngle + segmentAngle * (openSegment + 1));
         
-        
         boolean isInOpenSegment;
         if (openSegmentStart > openSegmentEnd) {
             isInOpenSegment = (markerAngle >= openSegmentStart || 
@@ -98,11 +100,16 @@ public class Game {
                             markerAngle <= openSegmentEnd);
         }
         
-        if (Math.abs(markerDistance - obstacleDistance) < 30) {
-        System.out.println("Marker angle: " + markerAngle + 
-                      ", Open segment: " + openSegmentStart + " to " + openSegmentEnd +
-                      ", In open segment: " + isInOpenSegment);
+        if (Math.abs(markerDistance - obstacleDistance) < obstacleThickness / 2) {
+            System.out.println("بررسی برخورد - زاویه مارکر: " + markerAngle + 
+                      ", بخش باز: " + openSegmentStart + " تا " + openSegmentEnd +
+                      ", در بخش باز است: " + isInOpenSegment);
+            
+            if (!isInOpenSegment) {
+                System.out.println("*** برخورد تشخیص داده شد! ***");
+            }
         }
+        
         return !isInOpenSegment;
     }
     private double normalizeAngle(double angle) {
@@ -117,7 +124,8 @@ public class Game {
         polygon.render(g2);
         marker.render(g2);
 
-        for (Obstacle obstacle : obstacles) {
+        ArrayList<Obstacle> obstaclesCopy = new ArrayList<>(obstacles);
+        for (Obstacle obstacle : obstaclesCopy) {
             obstacle.render(g2);
         }
     }
@@ -166,14 +174,12 @@ public class Game {
 
     public void moveMarkerLeft(double deltaTime) {
         if (marker != null && isGameRunning && !isGameOver) {
-            System.out.println("moveLeft"); //logs
             marker.moveLeft(deltaTime);
         }
     }
 
     public void moveMarkerRight(double deltaTime) {
         if (marker != null && isGameRunning && !isGameOver) {
-            System.out.println("moveRight"); //logs
             marker.moveRight(deltaTime);
         }
     }

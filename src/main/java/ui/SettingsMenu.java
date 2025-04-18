@@ -1,18 +1,16 @@
+//TODO:Implement save setting
 package ui;
 
 
 import javax.swing.*;
-import javazoom.jl.player.Player;
+import util.MusicPlayer;
 import java.awt.*;
-import java.io.BufferedInputStream;
-import java.io.InputStream;
+
 
 public class SettingsMenu {
     private SceneManager sceneManager;
     private JPanel settingsPanel;    
     private JSlider volumeSlider;
-    private Player player;
-    private Thread musicThread;
     private JComboBox<String> difficultyComboBox;
     private JButton backButton;
     private JCheckBox musicCheckBox;
@@ -60,7 +58,7 @@ public class SettingsMenu {
         difficultyLabel.setForeground(Color.WHITE);
         difficultyLabel.setBounds(screenWidth/2 - labelWidth - margin, spacing + margin*9, labelWidth, height);
         
-        String[] difficulties = {"Easy", "Medium", "Hard"};
+        String[] difficulties = {"EASY", "MEDIUM", "HARD"};
         difficultyComboBox = new JComboBox<>(difficulties);
         difficultyComboBox.setBounds(screenWidth/2, spacing + margin*9, componentWidth, height);
         
@@ -101,7 +99,10 @@ public class SettingsMenu {
     }
     
     public String getDifficulty() {
-        return (String) difficultyComboBox.getSelectedItem();
+        if (difficultyComboBox != null && difficultyComboBox.getSelectedItem() != null) {
+            return (String) difficultyComboBox.getSelectedItem();
+        }
+        return "MEDIUM";
     }
     
     public boolean hasMusic() {
@@ -113,29 +114,30 @@ public class SettingsMenu {
     }
 
     public void music() {
-        //stopMusic();
-        musicThread = new Thread(() -> {
-            while (hasMusic()) {
-                try {
-                    InputStream inputStream = getClass().getResourceAsStream("/sounds/Courtesy.mp3");
-                    if (inputStream == null) {
-                        System.out.println("File not founded");
-                        break;
-                    }
-                    BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
+        if (!hasMusic()) {
+            MusicPlayer.getInstance().stop();
+            return;
+        }
+        
+        float volume = volumeSlider.getValue() / 100.0f;
+        MusicPlayer.getInstance().setVolume(volume);
+        MusicPlayer.getInstance().setEnabled(true);
+        
+        try {
+            // Use the original WAV file
+            String musicPath = "/sounds/wonderful.wav";
+            System.out.println("Attempting to play music from: " + musicPath);
+            MusicPlayer.getInstance().play(musicPath);
+            
+            System.out.println("Music started with volume: " + volume);
+        } catch (Exception e) {
+            System.err.println("Failed to start music: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
-                    player = new Player(bufferedStream);
-                    player.play();
-
-                } catch (Exception e) {
-                    if (hasMusic()) {
-                        e.printStackTrace();
-                        System.out.println("Failed to play music " + e.getMessage());
-                    }
-                    break;
-                }
-            }
-        });
-        musicThread.start();
+    public void stopMusic() {
+        MusicPlayer.getInstance().stop();
+        System.out.println("Music stopped");
     }
 }

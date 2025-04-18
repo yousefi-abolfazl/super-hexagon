@@ -10,7 +10,7 @@ public class Marker {
     private double angle;
     private double markerx;
     private double markery;
-    private double moveSpeed = 3.0; 
+    private double moveSpeed = 1.0;
 
     public Marker(int distance, double angle) {
         this.distance = distance;
@@ -23,17 +23,13 @@ public class Marker {
     }
 
     public void moveLeft(double deltaTime) {
-        angle -= moveSpeed * deltaTime;
-        if (this.angle > 2 * Math.PI) {
-            this.angle -= 2 * Math.PI;
-        }
+        angle -= moveSpeed * deltaTime * 2;
+        normalizeAngle();
     }
     
     public void moveRight(double deltaTime) {
-        angle -= moveSpeed * deltaTime;
-        if (this.angle < 0) {
-            this.angle += 2 * Math.PI;
-        }
+        angle += moveSpeed * deltaTime * 2;
+        normalizeAngle();        
     }
 
     public void render(Graphics2D g2) {
@@ -59,16 +55,28 @@ public class Marker {
         g2.draw(Path);
     }
 
+    public void normalizeAngle() {
+        while (this.angle > 2 * Math.PI) {
+            this.angle -= 2 * Math.PI;
+        }
+        while (this.angle < 0) {
+            this.angle += 2 * Math.PI;
+        }
+    }
+
     public Point getPoint() {
         return new Point((int)markerx, (int)markery);
     }
     
     public double getAngle() {
+        angle = 2*Math.PI - angle;
+        normalizeAngle();
         return angle;
     }
     
     public void setAngle(double angle) {
         this.angle = angle;
+        normalizeAngle();
     }
 
     public int getDistance() {
