@@ -5,6 +5,7 @@ package ui;
 import javax.swing.*;
 import util.MusicPlayer;
 import java.awt.*;
+import java.io.InputStream;
 
 
 public class SettingsMenu {
@@ -114,27 +115,36 @@ public class SettingsMenu {
     }
 
     public void music() {
-        if (!hasMusic()) {
-            MusicPlayer.getInstance().stop();
-            return;
-        }
-        
-        float volume = volumeSlider.getValue() / 100.0f;
-        MusicPlayer.getInstance().setVolume(volume);
-        MusicPlayer.getInstance().setEnabled(true);
-        
-        try {
-            // Use the original WAV file
-            String musicPath = "/sounds/wonderful.wav";
-            System.out.println("Attempting to play music from: " + musicPath);
-            MusicPlayer.getInstance().play(musicPath);
-            
-            System.out.println("Music started with volume: " + volume);
-        } catch (Exception e) {
-            System.err.println("Failed to start music: " + e.getMessage());
-            e.printStackTrace();
-        }
+    if (!hasMusic()) {
+        MusicPlayer.getInstance().stop();
+        return;
     }
+    
+    float volume = volumeSlider.getValue() / 100.0f;
+    MusicPlayer.getInstance().setVolume(volume);
+    MusicPlayer.getInstance().setEnabled(true);
+    
+    try {
+        // استفاده از فایل WAV اصلی
+        String musicPath = "/sounds/wonderful.wav";
+        System.out.println("Attempting to play music from: " + musicPath);
+        
+        // بررسی وجود فایل
+        InputStream testStream = getClass().getResourceAsStream(musicPath);
+        if (testStream == null) {
+            System.err.println("WARNING: Could not find music file at " + musicPath);
+            System.err.println("Please check if the file exists in resources folder.");
+        } else {
+            testStream.close();
+            System.out.println("Music file found successfully!");
+        }
+        
+        MusicPlayer.getInstance().play(musicPath);
+    } catch (Exception e) {
+        System.err.println("Failed to start music: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
 
     public void stopMusic() {
         MusicPlayer.getInstance().stop();

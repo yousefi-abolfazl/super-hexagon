@@ -20,9 +20,13 @@ public class Game {
     private double obstacleSpawnTimer;
     private Random random;
     private final double OBSTACLE_SPAWN_INTERVAL = 2.0;
-    private int score;
+    private int score = 0;
     private double spawnRate = 1.0;
     private double gameSpeed = 1.0;
+    private long gameStartTime;       // When the game started (in nanoseconds)
+    private long currentTime;         // Current time (in nanoseconds)
+    private double survivalTimeSeconds; // Survival time in seconds
+    private boolean isTimerRunning;
 
     public Game() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -45,7 +49,14 @@ public class Game {
         if (!isGameRunning || isGameOver) {
             return;
         }
-        score += (int)(deltaTime * 10);
+        
+        if (isTimerRunning){
+            currentTime = System.nanoTime();
+            survivalTimeSeconds = (currentTime - gameStartTime) / 1_000_000_000.0;
+            updateScore();
+        }
+        
+        // score += (int)(gameTime * 10);
 
         obstacleSpawnTimer += deltaTime;
         if (obstacleSpawnTimer >= OBSTACLE_SPAWN_INTERVAL) {
@@ -66,6 +77,7 @@ public class Game {
 
             if (checkObstacleCollision(obstacle)) {
                 isGameOver = true;
+                isTimerRunning = false;
                 break;
             }
         }
@@ -76,9 +88,6 @@ public class Game {
         double markerAngle = marker.getAngle();
         double obstacleDistance = obstacle.getDistance();
         double obstacleThickness = obstacle.getThickness();
-
-        markerAngle = 2 * Math.PI - marker.getAngle(); //check
-        markerAngle = normalizeAngle(markerAngle); //check
 
         if (Math.abs(markerDistance - obstacleDistance) > obstacleThickness / 2) {
             return false;
@@ -98,16 +107,6 @@ public class Game {
         } else {
             isInOpenSegment = (markerAngle >= openSegmentStart && 
                             markerAngle <= openSegmentEnd);
-        }
-        
-        if (Math.abs(markerDistance - obstacleDistance) < obstacleThickness / 2) {
-            System.out.println("بررسی برخورد - زاویه مارکر: " + markerAngle + 
-                      ", بخش باز: " + openSegmentStart + " تا " + openSegmentEnd +
-                      ", در بخش باز است: " + isInOpenSegment);
-            
-            if (!isInOpenSegment) {
-                System.out.println("*** برخورد تشخیص داده شد! ***");
-            }
         }
         
         return !isInOpenSegment;
@@ -137,6 +136,7 @@ public class Game {
 
     public void stopGame() {
         isGameRunning = false;
+
     }
 
     public boolean isGameOver() {
@@ -189,5 +189,29 @@ public class Game {
     }
     public void setGameSpeed(double gameSpeed) {
         this.gameSpeed = gameSpeed;
+    }
+
+    private void updateScore() {
+        score = (int)(survivalTimeSeconds * 100);
+    }
+
+    public void setGameStartTime(long time) {
+        gameStartTime = time;
+    }
+
+    public void setCurrentTime(long time) {
+        currentTime = time;
+    }
+
+    public void setSurvivalTimeSeconds(double time) {
+        survivalTimeSeconds = time;
+    }
+
+    public void setIsTimerRunning(boolean run) {
+        isTimerRunning = run;
+    }
+
+    public long getGameStartTime() {
+        return gameStartTime;
     }
 }

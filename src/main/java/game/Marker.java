@@ -23,25 +23,25 @@ public class Marker {
     }
 
     public void moveLeft(double deltaTime) {
-        angle -= moveSpeed * deltaTime * 2;
+        angle += moveSpeed * deltaTime * 2;
         normalizeAngle();
     }
     
     public void moveRight(double deltaTime) {
-        angle += moveSpeed * deltaTime * 2;
+        angle -= moveSpeed * deltaTime * 2;
         normalizeAngle();        
     }
 
     public void render(Graphics2D g2) {
         GeneralPath Path = new GeneralPath();
         double s1x = (Math.cos(this.angle) * this.distance) + centerX;
-        double s1y = centerY - (Math.sin(this.angle) * this.distance);
+        double s1y = centerY + (Math.sin(this.angle) * this.distance);
         
         double s2x = centerX + (Math.cos(this.angle + 0.2) * this.distance);
-        double s2y = centerY - (Math.sin(this.angle + 0.2) * this.distance);
+        double s2y = centerY + (Math.sin(this.angle + 0.2) * this.distance);
         
         markerx = centerX + (Math.cos(this.angle + 0.10)) * (this.distance + 20);
-        markery = centerY - (Math.sin(this.angle + 0.10)) * (this.distance + 20);
+        markery = centerY + (Math.sin(this.angle + 0.10)) * (this.distance + 20);
 
         Path.moveTo(s1x, s1y);
         Path.lineTo(s2x, s2y);
@@ -69,8 +69,6 @@ public class Marker {
     }
     
     public double getAngle() {
-        angle = 2*Math.PI - angle;
-        normalizeAngle();
         return angle;
     }
     

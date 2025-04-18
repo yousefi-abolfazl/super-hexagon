@@ -34,7 +34,7 @@ public class Obstacle {
         distance -= speed * deltaTime;
         rotationAngle += rotationSpeed * deltaTime;
         
-        if (distance <= 100) { 
+        if (distance <= 70) { 
             isActive = false;
         }
     }
