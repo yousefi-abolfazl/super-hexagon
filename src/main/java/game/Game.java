@@ -1,7 +1,3 @@
-//TODO: Add rotation to the obstacles
-//TODO: Add a score system UI
-//TODO: Add a game over screen
-
 package game;
 
 import java.awt.*;

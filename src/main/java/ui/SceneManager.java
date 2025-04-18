@@ -1,6 +1,3 @@
-//TODO: Improve the UI
-
-
 package ui;
 
 import javax.swing.*;
@@ -32,7 +29,6 @@ public class SceneManager {
         
         gameScreen.applySettingGame(settingsMenu);
         
-        // Try to play music when initializing
         try {
             if (settingsMenu.hasMusic()) {
                 settingsMenu.music();

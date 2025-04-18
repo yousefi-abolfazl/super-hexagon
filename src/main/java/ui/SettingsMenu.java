@@ -1,4 +1,3 @@
-//TODO:Implement save setting
 package ui;
 
 
@@ -125,11 +124,9 @@ public class SettingsMenu {
     MusicPlayer.getInstance().setEnabled(true);
     
     try {
-        // استفاده از فایل WAV اصلی
         String musicPath = "/sounds/wonderful.wav";
         System.out.println("Attempting to play music from: " + musicPath);
         
-        // بررسی وجود فایل
         InputStream testStream = getClass().getResourceAsStream(musicPath);
         if (testStream == null) {
             System.err.println("WARNING: Could not find music file at " + musicPath);
